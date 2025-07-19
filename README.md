@@ -24,10 +24,6 @@ spawn_type: Npc
 npc_config:
 # Whether or not randomly timed events should occur. If false, all events will be at the same interval apart.
   random_events: true
-  # Whether or not tesla gates should be disabled during blackouts.
-  disable_teslas: true
-  # Whether or not nuke detonation should be cancelled during blackouts.
-  disable_nuke: false
   # The delay before the first event of each round, in seconds.
   initial_delay: 45
   # The minimum number of seconds a blackout event can last.
@@ -38,18 +34,38 @@ npc_config:
   delay_min: 225
   # The maximum amount of seconds between each event. If RandomEvents is disabled, this will be the delay between every event.
   delay_max: 565
-  # The percentage change that SCP-575 events will occur in any particular round.
-  spawn_chance: 165
+  # The percentage chance that SCP-575 events will occur in any particular round.
+  spawn_chance: 158
+  # Whether or not tesla gates should be disabled during blackouts.
+  disable_teslas: true
+  # Whether or not nuke detonation should be cancelled during blackouts.
+  disable_nuke: false
+  # Flicker lights when the event starts.
+  flicker_lights: true
+  # The number of seconds a first flickering lasts.
+  flicker_lights_duration: 4.25
   # Whether or not people in dark rooms should take damage if they have no light source in their hand.
   enable_keter: true
   # Specifies whether SCP-575 can be terminated when all generators are engaged. If set to false, generator activation only halts SCP-575's behavior and resets its event state without killing it.
   is_npc_killable: false
   # Determines how kills by SCP-575 handle ragdolls. If set to false, a skeleton ragdoll is spawned instead of the default one. If set to true, no ragdoll is created upon death.
   disable_ragdolls: false
-  # Whether or not to inform players about being damaged by SCP-575 via Broadcast messages.
-  enable_keter_broadcast: false
-  # Broadcast message shown when a player is damaged by SCP-575 if EnableKeterBroadcast is set to true.
-  keter_broadcast: 'An entity lurking in the shadows has struck you! Arm yourself with a flashlight!'
+  # Base damage per each stack of delay. The damage is inflicted if EnableKeter is set to true.
+  keter_damage: 24
+  # Penetration modifier same as in FirearmsDamageHandler.
+  keter_damage_penetration: 0.649999976
+  # The delay of receiving damage.
+  keter_damage_delay: 12
+  # Wheter or not to enable cooldown on the light source triggered on hit by SCP-575.
+  enable_keter_lightsource_cooldown: true
+  # Cooldown on the light source triggered on hit by SCP-575.
+  keter_lightsource_cooldown: 7.25
+  # The minimum modifier applied to ragdolls when they were damaged by SCP-575.
+  keter_force_min_modifier: 0.75
+  # The maximum modifier applied to ragdolls when they were damaged by SCP-575.
+  keter_force_max_modifier: 2.5
+  # The modifier applied to velocity when players are damaged by SCP-575.
+  keter_damage_velocity_modifier: 1.25
   # Whether or not to enable effects triggered by SCP-575 on player hurt.
   enable_keter_on_deal_damage_effects: true
   # Enable 'Ensnared' effect when damaged by SCP-575.
@@ -84,24 +100,18 @@ npc_config:
   enable_effect_exhausted: true
   # Enable 'Traumatized' effect when damaged by SCP-575.
   enable_effect_traumatized: true
-  # Whether or not SCP-575's sound effect should happen on the client damaged by the entity.
-  enable_scream_sound: true
-  # Flicker lights when the event starts.
-  flicker_lights: true
-  # The number of seconds a first flickering lasts.
-  flicker_lights_duration: 4.25
-  # Base damage per each stack of delay. Tha damage is inflicted if EnableKeter is set to true.
-  keter_damage: 35
-  # Penetration modifier same as in FirearmsDamageHandler.
-  keter_damage_penetration: 0.649999976
-  # The delay of receiving damage.
-  keter_damage_delay: 12
-  # The minimum modifier applied to ragdolls when they were damaged by SCP-575.
-  keter_force_min_modifier: 0.75
-  # The maximum modifier applied to ragdolls when they were damaged by SCP-575.
-  keter_force_max_modifier: 2.5
-  # The modifier applied to velocity when players are damaged by SCP-575.
-  keter_damage_velocity_modifier: 1.25
+  # Whether or not to inform players about being damaged by SCP-575 via Hint messages.
+  enable_keter_hint: true
+  # Hint message shown when a player is damaged by SCP-575 if EnableKeterHint is set to true.
+  keter_hint: 'You were damaged by SCP-575! Equip a flashlight!'
+  # Whether or not to inform players about cooldown of the light emitter like flashlight or weapon module.
+  enable_light_emitter_cooldown_hint: true
+  # Hint message shown when a player tries to use light source while on cooldown.
+  light_emitter_cooldown_hint: 'Your light source is on cooldown!'
+  # Hint message shown when a player tries to use light source while disabled by SCP-575 event.
+  light_emitter_disabled_hint: 'Your light source has been disabled!'
+  # Play horror ambient sound on blackout.
+  keter_ambient: true
   # Name displayed in player's death information.
   killed_by: 'SCP-575'
   # Killed by message
@@ -120,7 +130,7 @@ npc_config:
   time_between_sentence_and_start: 48.5999985
   # Message said by Cassie just after the blackout.
   cassie_post_message: 'pitch_0.72 jam_043_3 .g4 pitch_0.95 . ATTENTION . ATTENTION . please supply with light source or the results pitch_0.85 go in to be . pitch_0.8 grave'
-  # The time between the sentence and the blockout end.
+  # The time between the sentence of the blockout end.
   time_between_sentence_and_end: 7
   # Message said by Cassie after CassiePostMessage if outage gonna occure at whole site.
   cassie_message_facility: 'The Facility black out .'
@@ -136,8 +146,6 @@ npc_config:
   cassie_message_other: 'pitch_0.75 .g6 pitch_0.25 jam_027_4 .g1 pitch_1.75 .g2 pitch_0.33 .g4 . .g4 . .g4 . pitch_0.25 S pitch_0.65 .g3'
   # The sound CASSIE will make during a blackout.
   cassie_keter: 'jam_66_3 pitch_0.15 .g2 . pitch_0.5 .g5 . pitch_0.15 H . A .g3 . . pitch_0.15 Y pitch_0.3 O . pitch_0.57 .g1 . pitch_0.35 jam_050_2 .g6 jam_048_3 X . . pitch_0.25 jam_017_1 S . jam_050_1 .g3'
-  # Play horror ambient sound on blackout.
-  keter_ambient: true
   # The message CASSIE will say when a blackout ends.
   cassie_message_end: 'pitch_0.25 .g4 pitch_0.45 . .g3 .g4 pitch_0.98 . IMPORTANT MESSAGE . pitch_0.95 .g3 .g5 the facility power system is now . pitch_0.93 operational . .g3'
   # Should cassie clear the messeage and broadcast cue before important message to prevent spam?
@@ -146,7 +154,7 @@ npc_config:
   enable_facility_blackout: true
   # Percentage chance of an outage at the Heavy Containment Zone during the blackout.
   chance_heavy: 65
-  # Percentage chance of an outage at the Heavy Containment Zone during the blackout.
+  # Percentage chance of an outage at the Light Containment Zone during the blackout.
   chance_light: 25
   # Percentage chance of an outage at the Entrance Zone during the blackout.
   chance_entrance: 45
@@ -154,8 +162,10 @@ npc_config:
   chance_surface: 8
   # Percentage chance of an outage at an unknown and unspecified type of zone during the blackout.
   chance_other: 22
-  # Change this to true if want to use per room probability settings isntead of per zone settings. The script will check all rooms in the specified zone with its probability.
+  # Change this to true if want to use per room probability settings instead of per zone settings. The script will check all rooms in the specified zone with its probability.
   use_per_room_chances: true
+  # Per how many seconds automatic cleanups of event handlers are called.
+  handler_cleanup_interval: 90
 # Whether of not debug messages are displayed in the console.
 debug: true
 ```
